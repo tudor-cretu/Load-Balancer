@@ -23,5 +23,8 @@ $(LOAD).o: $(LOAD).c $(LOAD).h
 $(HASHTABLE).o: $(HASHTABLE).c $(HASHTABLE).h
 	$(CC) $(CFLAGS) $^ -c
 
+pack:
+	zip -FSr 315CA_CretuMihneaTudor_Tema2.zip README.md Makefile *.c *.h
+
 clean:
 	rm -f *.o tema2 *.h.gch

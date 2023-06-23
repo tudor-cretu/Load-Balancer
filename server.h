@@ -1,12 +1,10 @@
-/* Copyright 2023 <> */
+/* Copyright 2023 <Cretu Mihnea Tudor> */
 #ifndef SERVER_H_
 #define SERVER_H_
 
 #include "hashtable.h"
 
 typedef struct server_memory {
-	/* TODO 0 */
-    int replica;
 	int id;
 	int label;
 	unsigned int hash;
@@ -57,6 +55,13 @@ void server_remove(server_memory *server, char *key);
  */
 char *server_retrieve(server_memory *server, char *key);
 
+/**
+ * label_formula() - Computes the label for a server.
+ * 					 The label is computed as follows:
+ * 						- server_id + pos * 100000
+ * 						- server_id is the id of the server
+ * 						- pos is the position of the server on the hash ring 
+*/
 int label_formula(int server_id, int pos);
 
 #endif /* SERVER_H_ */

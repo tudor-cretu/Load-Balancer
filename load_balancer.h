@@ -1,4 +1,4 @@
-/* Copyright 2023 <> */
+/* Copyright 2023 <Cretu Mihnea Tudor> */
 #ifndef LOAD_BALANCER_H_
 #define LOAD_BALANCER_H_
 
@@ -92,10 +92,30 @@ void loader_add_server(load_balancer *main, int server_id);
  */
 void loader_remove_server(load_balancer *main, int server_id);
 
+/** 
+ * loader_servers_sort() - Sorts the servers in the hash ring by their hash / id
+ * @arg1: Load balancer which distributes the work.
+*/
 void loader_servers_sort(load_balancer *main);
 
-void move_objects(server_memory *server_from, server_memory *server_to);
+/**
+ * move_objects_for_remove() - Moves the objects from one server to another
+ * @arg1: Server from which the objects will be moved
+ * @arg2: Server to which the objects will be moved
+*/
+void move_objects_for_remove(server_memory *server_from,
+     server_memory *server_to);
 
-int loader_search_position(load_balancer *main, server_memory *server);
+/**
+ * get_keys() - Returns the keys from a server
+ * @arg1: Server from which the keys will be returned
+*/
+char **get_keys(server_memory *server_from);
+
+/**
+ * get_values() - Returns the values from a server
+ * @arg1: Server from which the values will be returned
+*/
+char **get_values(server_memory *server_from);
 
 #endif /* LOAD_BALANCER_H_ */

@@ -1,3 +1,4 @@
+/* Copyright 2023 <Cretu Mihnea Tudor> */
 #include "hashtable.h"
 #include "utils.h"
 
@@ -16,13 +17,6 @@ linked_list_t *ll_create(unsigned int data_size) {
   return ll;
 }
 
-/*
- * Pe baza datelor trimise prin pointerul new_data, se creeaza un nou nod care e
- * adaugat pe pozitia n a listei reprezentata de pointerul list. Pozitiile din
- * lista sunt indexate incepand cu 0 (i.e. primul nod din lista se afla pe
- * pozitia n=0). Daca n >= nr_noduri, noul nod se adauga la finalul listei. Daca
- * n < 0, eroare.
- */
 void ll_add_nth_node(linked_list_t *list, unsigned int n,
                      const void *new_data) {
   ll_node_t *prev, *curr;
@@ -32,7 +26,7 @@ void ll_add_nth_node(linked_list_t *list, unsigned int n,
     return;
   }
 
-  /* n >= list->size inseamna adaugarea unui nou nod la finalul listei. */
+  /* n >= list->size means adding the new node at the end of the list */
   if (n > list->size) {
     n = list->size;
   }
@@ -51,7 +45,7 @@ void ll_add_nth_node(linked_list_t *list, unsigned int n,
 
   new_node->next = curr;
   if (prev == NULL) {
-    /* Adica n == 0. */
+    /* means n == 0*/
     list->head = new_node;
   } else {
     prev->next = new_node;
@@ -60,14 +54,6 @@ void ll_add_nth_node(linked_list_t *list, unsigned int n,
   list->size++;
 }
 
-/*
- * Elimina nodul de pe pozitia n din lista al carei pointer este trimis ca
- * parametru. Pozitiile din lista se indexeaza de la 0 (i.e. primul nod din
- * lista se afla pe pozitia n=0). Daca n >= nr_noduri - 1, se elimina nodul de
- * la finalul listei. Daca n < 0, eroare. Functia intoarce un pointer spre acest
- * nod proaspat eliminat din lista. Este responsabilitatea apelantului sa
- * elibereze memoria acestui nod.
- */
 ll_node_t *ll_remove_nth_node(linked_list_t *list, unsigned int n) {
   ll_node_t *prev, *curr;
 
@@ -75,8 +61,7 @@ ll_node_t *ll_remove_nth_node(linked_list_t *list, unsigned int n) {
     return NULL;
   }
 
-  /* n >= list->size - 1 inseamna eliminarea nodului de la finalul listei.
-   */
+  /* n >= list->size - 1 means removing the node from the end of the list */
   if (n > list->size - 1) {
     n = list->size - 1;
   }
@@ -90,7 +75,7 @@ ll_node_t *ll_remove_nth_node(linked_list_t *list, unsigned int n) {
   }
 
   if (prev == NULL) {
-    /* Adica n == 0. */
+    /* n == 0 */
     list->head = curr->next;
   } else {
     prev->next = curr->next;
@@ -101,10 +86,6 @@ ll_node_t *ll_remove_nth_node(linked_list_t *list, unsigned int n) {
   return curr;
 }
 
-/*
- * Functia intoarce numarul de noduri din lista al carei pointer este trimis ca
- * parametru.
- */
 unsigned int ll_get_size(linked_list_t *list) {
   if (!list) {
     return -1;
@@ -113,12 +94,6 @@ unsigned int ll_get_size(linked_list_t *list) {
   return list->size;
 }
 
-/*
- * Procedura elibereaza memoria folosita de toate nodurile din lista, iar la
- * sfarsit, elibereaza memoria folosita de structura lista si actualizeaza la
- * NULL valoarea pointerului la care pointeaza argumentul (argumentul este un
- * pointer la un pointer).
- */
 void ll_free(linked_list_t **pp_list) {
   ll_node_t *currNode;
 
@@ -138,9 +113,6 @@ void ll_free(linked_list_t **pp_list) {
   *pp_list = NULL;
 }
 
-/*
- * Functii de comparare a cheilor:
- */
 int compare_function_ints(void *a, void *b) {
   int int_a = *((int *)a);
   int int_b = *((int *)b);
@@ -161,9 +133,6 @@ int compare_function_strings(void *a, void *b) {
   return strcmp(str_a, str_b);
 }
 
-/*
- * Functii de hashing:
- */
 unsigned int hash_function_int(void *a) {
   /*
    * Credits: https://stackoverflow.com/a/12996028/7883884
@@ -190,21 +159,12 @@ unsigned int hash_function_string(void *a) {
   return hash;
 }
 
-/*
- * Functie apelata pentru a elibera memoria ocupata de cheia si valoarea unei
- * perechi din hashtable. Daca cheia sau valoarea contin tipuri de date complexe
- * aveti grija sa eliberati memoria luand in considerare acest aspect.
- */
 void key_val_free_function(void *data) {
   info *data_info = (info *)data;
   free(data_info->key);
   free(data_info->value);
 }
 
-/*
- * Functie apelata dupa alocarea unui hashtable pentru a-l initializa.
- * Trebuie alocate si initializate si listele inlantuite.
- */
 hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void*),
 		int (*compare_function)(void*, void*),
 		void (*key_val_free_function)(void*))
@@ -228,11 +188,6 @@ hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void*),
 	return ht;
 }
 
-/*
- * Functie care intoarce:
- * 1, daca pentru cheia key a fost asociata anterior o valoare in hashtable
- * folosind functia put 0, altfel.
- */
 int ht_has_key(hashtable_t *ht, void *key) {
   if (!ht || !key) {
     return -1;
@@ -271,23 +226,6 @@ void *ht_get(hashtable_t *ht, void *key) {
   return NULL;
 }
 
-/*
- * Atentie! Desi cheia este trimisa ca un void pointer (deoarece nu se impune
- * tipul ei), in momentul in care se creeaza o noua intrare in hashtable (in
- * cazul in care cheia nu se gaseste deja in ht), trebuie creata o copie a
- * valorii la care pointeaza key si adresa acestei copii trebuie salvata in
- * structura info asociata intrarii din ht. Pentru a sti cati octeti trebuie
- * alocati si copiati, folositi parametrul key_size_bytes.
- *
- * Motivatie:
- * Este nevoie sa copiem valoarea la care pointeaza key deoarece dupa un apel
- * put(ht, key_actual, value_actual), valoarea la care pointeaza key_actual
- * poate fi alterata (de ex: *key_actual++). Daca am folosi direct adresa
- * pointerului key_actual, practic s-ar modifica din afara hashtable-ului cheia
- * unei intrari din hashtable. Nu ne dorim acest lucru, fiindca exista riscul sa
- * ajungem in situatia in care nu mai stim la ce cheie este inregistrata o
- * anumita valoare.
- */
 void ht_put(hashtable_t *ht, void *key, unsigned int key_size, void *value,
             unsigned int value_size) {
   if (!ht || !key || !value) {
@@ -321,22 +259,11 @@ void ht_put(hashtable_t *ht, void *key, unsigned int key_size, void *value,
 
   memcpy(data_info->key, key, key_size);
   memcpy(data_info->value, value, value_size);
-
-  ll_add_nth_node(
-      ht->buckets[hash_index], 0,
-      data_info);  // adaugam fiecare nod nou pe prima pozitie a listei
+  ll_add_nth_node(ht->buckets[hash_index], 0, data_info);
   ht->size++;
-
   free(data_info);
 }
 
-/*
- * Procedura care elimina din hashtable intrarea asociata cheii key.
- * Atentie! Trebuie avuta grija la eliberarea intregii memorii folosite pentru o
- * intrare din hashtable (adica memoria pentru copia lui key --vezi observatia
- * de la procedura put--, pentru structura info si pentru structura Node din
- * lista inlantuita).
- */
 void ht_remove_entry(hashtable_t *ht, void *key) {
   if (!ht || !key || ht_has_key(ht, key) != 1) {
     return;
@@ -352,14 +279,11 @@ void ht_remove_entry(hashtable_t *ht, void *key) {
 
     if (!ht->compare_function(data_info->key, key)) {
       ht->key_val_free_function(data_info);
-      free(data_info);  // eliberam memoria la care pointeaza
-                        // membrul data din nod
+      free(data_info);
 
       ll_node_t *deleted_node =
-          ll_remove_nth_node(ht->buckets[hash_index],
-                             node_nr);  // captam nodul care trebuie eliberat
-      free(deleted_node);               // eliberam memoria la care pointeaza
-                                        // nodul ce a fost exclus din lista
+          ll_remove_nth_node(ht->buckets[hash_index], node_nr);
+      free(deleted_node);
 
       ht->size--;
       return;
@@ -370,10 +294,6 @@ void ht_remove_entry(hashtable_t *ht, void *key) {
   }
 }
 
-/*
- * Procedura care elibereaza memoria folosita de toate intrarile din hashtable,
- * dupa care elibereaza si memoria folosita pentru a stoca structura hashtable.
- */
 void ht_free(hashtable_t *ht)
 {
 	ll_node_t *aux;
@@ -392,14 +312,10 @@ void ht_free(hashtable_t *ht)
 	free(ht);
 }
 
-unsigned int ht_get_size(hashtable_t *ht) {
-  if (ht == NULL) return 0;
+unsigned int ht_get_size(hashtable_t *ht)
+{
+	if (ht == NULL)
+		return 0;
 
-  return ht->size;
-}
-
-unsigned int ht_get_hmax(hashtable_t *ht) {
-  if (ht == NULL) return 0;
-
-  return ht->hmax;
+	return ht->size;
 }
